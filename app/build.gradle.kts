@@ -33,6 +33,9 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -55,8 +58,14 @@ dependencies {
     implementation("io.ktor:ktor-client-core:1.6.7")
     implementation("io.ktor:ktor-client-cio:1.6.7")
     implementation("io.ktor:ktor-client-websockets:1.6.7")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
     // Oboe for low-latency audio
     implementation("com.google.oboe:oboe:1.5.0")
+
+    implementation ("io.socket:socket.io-client:2.0.1")
+
+    implementation ("com.squareup.okhttp3:okhttp:4.9.1")
+    implementation ("org.json:json:20210307")
 }
