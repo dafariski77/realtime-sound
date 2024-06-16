@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.realtimesound.databinding.ActivityRecordBinding
+import org.json.JSONObject
+import org.json.JSONException
 
 class RecordActivity : AppCompatActivity() {
     private val REQUEST_RECORD_AUDIO_PERMISSION = 200
@@ -18,7 +20,6 @@ class RecordActivity : AppCompatActivity() {
     private var permissionToRecordAccepted = false
     private var permissions: Array<String> = arrayOf(Manifest.permission.RECORD_AUDIO)
     private lateinit var binding: ActivityRecordBinding
-
     private lateinit var serverResponseReceiver: BroadcastReceiver
 
 
@@ -40,7 +41,15 @@ class RecordActivity : AppCompatActivity() {
         serverResponseReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 val response = intent.getStringExtra("response")
-                binding.tvPredict.text = response
+                try {
+                    val jsonResponse = JSONObject(response)
+                    val label = jsonResponse.getString("label")
+                    val confidence = jsonResponse.getInt("confidence")
+                    binding.tvPredict.text = "Label: $label, Confidence: $confidence%"
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                    binding.tvPredict.text = "Failed to parse server response"
+                }
             }
         }
 //        registerReceiver(serverResponseReceiver, IntentFilter("com.example.realtimesound.SERVER_RESPONSE"))
@@ -50,6 +59,9 @@ class RecordActivity : AppCompatActivity() {
 //        } else {
 //            registerReceiver(serverResponseReceiver, intentFilter)
 //        }
+
+        val intentFilter = IntentFilter("com.example.realtime sound.SERVER_RESPONSE")
+        registerReceiver(serverResponseReceiver, intentFilter)
 
         requestPermissions()
         SocketManager.connect()

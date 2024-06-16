@@ -16,6 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.io.IOException
 import java.net.Socket
 import java.net.URISyntaxException
@@ -109,17 +110,17 @@ class AudioService : Service() {
             audioData[i * 2] = (buffer[i].toInt() and 0x00FF).toByte()
             audioData[i * 2 + 1] = (buffer[i].toInt() shr 8).toByte()
         }
-        SocketManager.emit("audio_data", audioData)
+        SocketManager.emit("predict_audio", audioData)
         Log.d(TAG, "Sent audio data: ${audioData.size} bytes")
 
     }
 
     private val onServerResponse = Emitter.Listener { args ->
-        val response = args[0] as String // Assuming server response is a String
-        val intent = Intent("com.example.yourapp.SERVER_RESPONSE")
-        intent.putExtra("response", response)
+        val response = args[0] as JSONObject // Assuming server response is a String
+        val intent = Intent("com.example.realtime sound.SERVER_RESPONSE")
+        intent.putExtra("response", response.toString())
         sendBroadcast(intent)
-        Log.d(TAG, "Received server response: $response")
+        Log.d(TAG, "Received server response: ${response.toString()}")
     }
 
     private fun stopRecording() {
