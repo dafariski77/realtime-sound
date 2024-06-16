@@ -36,6 +36,8 @@ class AudioService : Service() {
     private val bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT)
     private val audioBuffer = ShortArray(bufferSize)
 
+    private val accumulatedAudio = mutableListOf<Short>()
+
 
     override fun onBind(intent: Intent): IBinder {
         throw UnsupportedOperationException("Not yet implemented")
@@ -94,9 +96,12 @@ class AudioService : Service() {
             while (isRecording) {
                 val read = audioRecord?.read(audioBuffer, 0, audioBuffer.size) ?: 0
                 if (read > 0) {
-                    // Process the audio buffer here
-                    sendAudioData(audioBuffer)
-                    Log.d(TAG, "Audio data read: ${audioBuffer.size} samples")
+                    accumulatedAudio.addAll(audioBuffer.take(read))
+                    if (accumulatedAudio.size >= SAMPLE_RATE * 4) {
+                        // Process the audio buffer here
+                        sendAudioData(accumulatedAudio.toShortArray())
+                        accumulatedAudio.clear()
+                    }
                 }
             }
         }

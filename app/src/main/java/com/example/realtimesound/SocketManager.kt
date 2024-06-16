@@ -13,7 +13,7 @@ object SocketManager {
 
     init {
         try {
-            mSocket = IO.socket("http://192.168.169.6:8000")
+            mSocket = IO.socket("http://34.101.212.39:8000")
 //            Log.d("Socket Connection", "Socket Connected")
         } catch (e: URISyntaxException) {
             e.printStackTrace()
